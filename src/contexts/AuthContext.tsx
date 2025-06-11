@@ -1,11 +1,27 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+// src/contexts/AuthContext.tsx
+
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
-import api from '../services/api'; // Axios configurado con baseURL
-import { loginUser, refreshAccessToken, clearTokens, Usuario } from '../services/authService';
+import api from '../services/api';
+import { loginUser, refreshAccessToken, clearTokens } from '../services/authService';
+
+// Define Usuario interface here if not exported from elsewhere
+interface Usuario {
+  id: number;
+  nombre: string;
+  rol: string;
+}
 
 interface AuthContextType {
+  initializing: boolean;
   isAuthenticated: boolean;
   accessToken: string | null;
   refreshToken: string | null;
@@ -16,7 +32,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [initializing, setInitializing] = useState(true);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [user, setUser] = useState<Usuario | null>(null);
@@ -29,19 +48,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         AsyncStorage.getItem('accessToken'),
         AsyncStorage.getItem('refreshToken'),
       ]);
+
       if (storedAccess && storedRefresh) {
         setAccessToken(storedAccess);
         setRefreshToken(storedRefresh);
-        // Decode minimal user info del token
+        // Decodificamos el token para extraer user
         try {
-          const decoded = jwtDecode<{ id: number; nombre: string; rol: string }>(storedAccess);
-          setUser({ id: decoded.id, nombre: decoded.nombre, rol: decoded.rol });
+          const decoded = jwtDecode<{
+            id: number;
+            nombre: string;
+            rol: string;
+          }>(storedAccess);
+          setUser({
+            id: decoded.id,
+            nombre: decoded.nombre,
+            rol: decoded.rol,
+          });
+          api.defaults.headers.common['Authorization'] = `Bearer ${storedAccess}`;
+          setIsAuthenticated(true);
         } catch {
-          setUser(null);
+          // token corrupto: limpiamos
+          await clearTokens();
+          setIsAuthenticated(false);
         }
-        api.defaults.headers.common['Authorization'] = `Bearer ${storedAccess}`;
-        setIsAuthenticated(true);
       }
+      setInitializing(false);
     })();
   }, []);
 
@@ -76,32 +107,57 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       api.defaults.headers.common['Authorization'] = `Bearer ${newAccess}`;
       setIsAuthenticated(true);
     } catch {
-      // Si falla el refresh, hace logout
+      // si falla el refresh, hacemos logout
       await logout();
     }
   }, [accessToken, refreshToken]);
 
-  const login = useCallback(async (email: string, password: string) => {
-    const { accessToken: newAccess, refreshToken: newRefresh, usuario } = await loginUser(email, password);
-    setAccessToken(newAccess);
-    setRefreshToken(newRefresh);
-    setUser(usuario);
-    setIsAuthenticated(true);
-    api.defaults.headers.common['Authorization'] = `Bearer ${newAccess}`;
-  }, []);
+  const login = useCallback(
+    async (email: string, password: string) => {
+      const { accessToken: newAccess, refreshToken: newRefresh } =
+        await loginUser(email, password);
+      setAccessToken(newAccess);
+      setRefreshToken(newRefresh);
+      try {
+        const decoded = jwtDecode<{
+          id: number;
+          nombre: string;
+          rol: string;
+        }>(newAccess);
+        setUser({
+          id: decoded.id,
+          nombre: decoded.nombre,
+          rol: decoded.rol,
+        });
+      } catch {
+        setUser(null);
+      }
+      setIsAuthenticated(true);
+      api.defaults.headers.common['Authorization'] = `Bearer ${newAccess}`;
+    },
+    []
+  );
 
   const logout = useCallback(async () => {
     setAccessToken(null);
     setRefreshToken(null);
     setUser(null);
     setIsAuthenticated(false);
-    clearTokens();
+    await clearTokens();
     delete api.defaults.headers.common['Authorization'];
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, accessToken, refreshToken, user, login, logout }}
+      value={{
+        initializing,
+        isAuthenticated,
+        accessToken,
+        refreshToken,
+        user,
+        login,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>
