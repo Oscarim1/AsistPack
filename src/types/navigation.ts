@@ -18,3 +18,10 @@ export type TabsParamList = {
   MisRegistros: undefined;  // sin espacio
   Menu: undefined;          // sin acento
 };
+
+export type HomeStackParamList = {
+  NfcScanner: undefined;
+  Transicion: { trabajador: any; accion: string };
+  DetalleTrabajador: { trabajador: any };
+  TimeEntry: { trabajador: any };
+};
