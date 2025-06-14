@@ -1,15 +1,18 @@
-import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import React from 'react';
 import { AuthProvider } from './src/contexts/AuthContext';
-import RootNavigator from './src/navigation/RootNavigator';
+import { ScanProvider } from './src/contexts/ScanContext';
 import { navigationRef } from './src/navigation/NavigationService';
+import RootNavigator from './src/navigation/RootNavigator';
 
 export default function App() {
   return (
     <AuthProvider>
-      <NavigationContainer ref={navigationRef}>
-        <RootNavigator />
-      </NavigationContainer>
+      <ScanProvider>
+        <NavigationContainer ref={navigationRef}>
+          <RootNavigator />
+        </NavigationContainer>
+      </ScanProvider>
     </AuthProvider>
   );
 }

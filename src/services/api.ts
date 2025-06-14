@@ -8,19 +8,14 @@ import { resetToLogin } from '../navigation/NavigationService';
 import type { AxiosError, AxiosRequestConfig } from 'axios';
 
 let isRefreshing = false;
-let failedQueue: Array<{
-  resolve: (value: string | PromiseLike<string>) => void;
-  reject: (err: any) => void;
-}> = [];
+let failedQueue: Array<{ resolve: (token: string) => void; reject: (err: any) => void }> = [];
 
 const processQueue = (err: any, token: string | null = null) => {
-  failedQueue.forEach(({ resolve, reject }) =>
-    err ? reject(err) : resolve(token!)
-  );
+  failedQueue.forEach(({ resolve, reject }) => (err ? reject(err) : resolve(token!)));
   failedQueue = [];
 };
 
-// --- Request interceptor: inyecta accessToken ---
+// Request interceptor: attach access token
 httpClient.interceptors.request.use(
   async (config) => {
     const token = await AsyncStorage.getItem('accessToken');
@@ -33,7 +28,7 @@ httpClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// --- Response interceptor: refresca token si 403 ---
+// Response interceptor: refresh token on 403
 httpClient.interceptors.response.use(
   (res) => res,
   async (error: AxiosError & { config?: AxiosRequestConfig & { _retry?: boolean } }) => {
