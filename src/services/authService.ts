@@ -1,27 +1,21 @@
-// src/services/authService.ts
+import { httpClient } from './httpClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { AxiosInstance } from 'axios';
 
-let client: AxiosInstance;
-
-/**
- * Debe llamarse una única vez al iniciar la app,
- * pasándole la instancia configurada en api.ts
- */
-export function initAuthService(axiosInstance: AxiosInstance) {
-  client = axiosInstance;
+export interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  // add other properties if needed
+}
+export interface RefreshResponse {
+  accessToken: string;
+  // add other properties if needed
 }
 
-// tipos de respuesta...
-export interface LoginResponse { /* ... */ }
-export interface RefreshResponse { /* ... */ }
-
-/** LOGIN */
 export const loginUser = async (
   email: string,
   password: string
 ): Promise<LoginResponse> => {
-  const { data } = await client.post<LoginResponse>('/auth/login', {
+  const { data } = await httpClient.post<LoginResponse>('/auth/login', {
     correo: email,
     password,
   });
@@ -32,16 +26,18 @@ export const loginUser = async (
   return data;
 };
 
-/** REFRESH */
 export const refreshAccessToken = async (): Promise<string> => {
-  const refreshToken = await AsyncStorage.getItem('refreshToken');
-  if (!refreshToken) throw new Error('No hay refreshToken');
-  const { data } = await client.post<RefreshResponse>('/auth/refresh', {
-    refreshToken,
-  });
+  const stored = await AsyncStorage.getItem('refreshToken');
+  if (!stored) throw new Error('No hay refreshToken disponible');
+  const { data } = await httpClient.post<RefreshResponse>(
+    '/auth/refresh',
+    { refreshToken: stored }
+  );
   await AsyncStorage.setItem('accessToken', data.accessToken);
   return data.accessToken;
 };
 
 export const clearTokens = () =>
   AsyncStorage.multiRemove(['accessToken', 'refreshToken']);
+
+// Elimina TODO import api from './api'
