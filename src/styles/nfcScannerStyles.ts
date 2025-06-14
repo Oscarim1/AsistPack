@@ -58,7 +58,8 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#0E110F',
-    textAlign: 'center',
+    textAlign: 'left',
+    flex: 1,
   },
   icon: {
     marginRight: 12,
