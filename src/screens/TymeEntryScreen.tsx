@@ -87,7 +87,7 @@ export default function TimeEntryScreen() {
   }, [showModal]);
 
   // Carga estado de asistencias y ajusta botones
-  const loadCurrent = useCallback(async () => {
+  const loadCurrent = useCallback(async (skipCompleteCheck = false) => {
     setLoading(true);
     try {
       const actual: AsistenciaRecord = await getAsistenciaActual(trabajador.pulsera_uuid);
@@ -99,8 +99,8 @@ export default function TimeEntryScreen() {
       };
       setEnabled(next);
 
-      // Si ya registró todo, mostramos mensaje y redirigimos
-      if (Object.values(next).every(v => !v)) {
+      // Si ya registró todo y no se omite la verificación, mostramos mensaje y redirigimos
+      if (!skipCompleteCheck && Object.values(next).every(v => !v)) {
         setModalMessage('Ya tienes registrada tu asistencia del día de hoy.\n¡Hasta mañana!');
         setShowModal(true);
         setTimeout(() => {
@@ -128,7 +128,7 @@ export default function TimeEntryScreen() {
 
       setModalMessage(msg);
       setShowModal(true);
-      await loadCurrent();
+      await loadCurrent(true);
       setTimeout(() => {
         setShowModal(false);
         navigation.popToTop();
