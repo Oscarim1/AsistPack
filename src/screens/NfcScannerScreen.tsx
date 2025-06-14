@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { CompositeNavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { Feather } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import {
@@ -30,11 +31,11 @@ export default function NfcScannerScreen() {
   const { setHasScanned } = useScan();
   
   const acciones = [
-    { key: 'asistencia',    titulo: 'Ingresar asistencia',  tipo: 'ASISTENCIA' },
-    { key: 'recoleccion',   titulo: 'Ingresar recolección', tipo: 'RECOLECCION' },
-    { key: 'cuadrilla',     titulo: 'Asignar a cuadrilla',   tipo: 'CUADRILLA' },
-    { key: 'registrar',     titulo: 'Registrar usuario',     tipo: 'REGISTRAR' },
-    { key: 'misRegistros',  titulo: 'Mis Registros',         tipo: 'MIS_REGISTROS' as const },
+    { key: 'asistencia',   titulo: 'Ingresar asistencia',  tipo: 'ASISTENCIA',   icon: 'check-circle' },
+    { key: 'recoleccion',  titulo: 'Ingresar recolección', tipo: 'RECOLECCION', icon: 'package' },
+    { key: 'cuadrilla',    titulo: 'Asignar a cuadrilla',  tipo: 'CUADRILLA',   icon: 'users' },
+    { key: 'registrar',    titulo: 'Registrar usuario',    tipo: 'REGISTRAR',   icon: 'user-plus' },
+    { key: 'misRegistros', titulo: 'Mis Registros',        tipo: 'MIS_REGISTROS' as const, icon: 'file-text' },
   ] as const;
 
   const handleScan = async (tipoAccion: typeof acciones[number]['tipo']) => {
@@ -77,13 +78,15 @@ export default function NfcScannerScreen() {
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        {acciones.map(({ key, titulo, tipo }) => (
+        <Text style={styles.title}>Seleccione una acción</Text>
+        {acciones.map(({ key, titulo, tipo, icon }) => (
           <View key={key} style={{ alignItems: 'center', marginVertical: 12 }}>
             <TouchableOpacity
-              style={[styles.card, { width: screenWidth * 0.6 }]}
+              style={[styles.card, { width: screenWidth * 0.8 }]}
               activeOpacity={0.7}
               onPress={() => handleScan(tipo)}
             >
+              <Feather name={icon} size={20} color="#0E110F" style={styles.icon} />
               <Text style={styles.cardButtonText}>{titulo}</Text>
             </TouchableOpacity>
           </View>

@@ -15,11 +15,13 @@ export default StyleSheet.create({
     paddingHorizontal: 16,
   },
   card: {
-    // Cada "tarjeta" tendrá un fondo blanco, esquinas redondeadas y sombra ligera
-    backgroundColor: '#A8DEBA',
+    // Cada "tarjeta" tendrá fondo blanco con borde de color para resaltar
+    backgroundColor: '#FFF',
+    borderColor: '#A8DEBA',
+    borderWidth: 1,
     borderRadius: 12,
-    paddingVertical: 20,
-    paddingHorizontal: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
     marginBottom: 16,
 
     // Sombra para iOS
@@ -34,7 +36,9 @@ export default StyleSheet.create({
     // definimos un ancho "máximo" y centramos
     width: '100%',           // Max ancho del card = ancho padre menos paddingHorizontal
     maxWidth: 500,           // Evita que se estire demasiado en tablets o pantallas anchas
-    alignItems: 'center',    // Centrar todo dentro de la tarjeta
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   cardTitle: {
     fontSize: 18,
@@ -54,6 +58,16 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#0E110F',
+    textAlign: 'center',
+  },
+  icon: {
+    marginRight: 12,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 24,
     textAlign: 'center',
   },
 });
