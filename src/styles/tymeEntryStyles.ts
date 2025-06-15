@@ -33,7 +33,7 @@ export default StyleSheet.create({
     marginBottom: 24,
   },
   button: {
-    width: '90%',
+    width: '100%',
     maxWidth: 500,
     paddingVertical: 16,
     paddingHorizontal: 20,
