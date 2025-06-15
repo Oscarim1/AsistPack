@@ -22,3 +22,18 @@ export const getTrabajadorPorPulsera = async (
     throw new Error('No se encontró el trabajador');
   }
 };
+
+export interface CrearTrabajadorData {
+  nombres: string;
+  direccion: string;
+  contacto: string;
+  rol: string;
+  pulsera_uuid: string;
+}
+
+export const crearTrabajador = async (
+  data: CrearTrabajadorData
+): Promise<Trabajador> => {
+  const resp = await api.post<Trabajador>('/trabajadores', data);
+  return resp.data;
+};

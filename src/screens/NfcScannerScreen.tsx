@@ -58,7 +58,15 @@ export default function NfcScannerScreen() {
           navigation.navigate('TimeEntry', { trabajador });
           break;
         case 'REGISTRAR':
-          navigation.navigate('TimeEntry', { trabajador });
+          if (trabajador.rol === 'supervisor') {
+            navigation.navigate('CrearTrabajador');
+          } else {
+            Alert.alert(
+              'Permiso denegado',
+              'No tienes permisos para registrar trabajadores',
+              [{ text: 'OK', onPress: () => navigation.navigate('Inicio') }]
+            );
+          }
           break;
         case 'MIS_REGISTROS':
           navigation.navigate('MisRegistros', { trabajador });
