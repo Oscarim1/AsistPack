@@ -31,6 +31,13 @@ type TimeEntryNavProp = NativeStackNavigationProp<HomeStackParamList, 'TimeEntry
 
 const tiposOrder: TipoAsistencia[] = ['entrada', 'salida_colacion', 'entrada_colacion', 'salida'];
 
+const iconMap: Record<TipoAsistencia, React.ComponentProps<typeof Feather>['name']> = {
+  entrada: 'log-in',
+  salida_colacion: 'coffee',
+  entrada_colacion: 'log-in',
+  salida: 'log-out',
+};
+
 export default function TimeEntryScreen() {
   const navigation = useNavigation<TimeEntryNavProp>();
   const { params } = useRoute<TimeEntryRouteProp>();
@@ -152,6 +159,7 @@ export default function TimeEntryScreen() {
           style={[styles.button, !enabled[tipo] && styles.buttonDisabled]}
           disabled={!enabled[tipo]}
           onPress={() => handlePress(tipo)}>
+          <Feather name={iconMap[tipo]} size={20} color="#004D40" style={styles.icon} />
           <Text style={styles.buttonText}>{formatTipo(tipo)}</Text>
         </TouchableOpacity>
       ))}
