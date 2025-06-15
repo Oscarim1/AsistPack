@@ -33,12 +33,18 @@ export default StyleSheet.create({
     marginBottom: 24,
   },
   button: {
-    width: '90%',
-    paddingVertical: 14,
-    backgroundColor: '#A8E6CF',
+    width: '100%',
+    maxWidth: 500,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    backgroundColor: '#FFF',
+    borderColor: '#A8E6CF',
+    borderWidth: 1,
     borderRadius: 12,
+    flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 8,
+    justifyContent: 'flex-start',
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -47,16 +53,22 @@ export default StyleSheet.create({
         shadowRadius: 4,
       },
       android: {
-        elevation: 3,
+        elevation: 2,
       },
     }),
   },
   buttonDisabled: {
     backgroundColor: '#E0E0E0',
+    borderColor: '#E0E0E0',
   },
   buttonText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#004D40',
+    flex: 1,
+    textAlign: 'left',
+  },
+  icon: {
+    marginRight: 12,
   },
 });
