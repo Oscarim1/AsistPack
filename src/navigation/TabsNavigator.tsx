@@ -10,6 +10,7 @@ import MyRecordsScreen from '../screens/MyRecordsScreen';
 import NfcScannerScreen from '../screens/NfcScannerScreen';
 import TransicionScreen from '../screens/TransicionScreen';
 import TymeEntryScreen from '../screens/TymeEntryScreen';
+import CrearTrabajadorScreen from '../screens/CrearTrabajadorScreen';
 import type { HomeStackParamList } from '../types/navigation';
 import { TabsParamList } from '../types/navigation';
 
@@ -24,6 +25,7 @@ function HomeStackNavigator() {
       <HomeStack.Screen name="DetalleTrabajador" component={DetalleTrabajadorScreen} />
       <HomeStack.Screen name="TimeEntry" component={TymeEntryScreen} />
       <HomeStack.Screen name="MisRegistros" component={MyRecordsScreen} />
+      <HomeStack.Screen name="CrearTrabajador" component={CrearTrabajadorScreen} />
     </HomeStack.Navigator>
   );
 }

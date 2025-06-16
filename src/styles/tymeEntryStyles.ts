@@ -1,6 +1,6 @@
 // src/styles/tymeEntryStyles.ts
 
-import { StyleSheet, Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
@@ -33,7 +33,7 @@ export default StyleSheet.create({
     marginBottom: 24,
   },
   button: {
-    width: '100%',
+    width: '80%',
     maxWidth: 500,
     paddingVertical: 16,
     paddingHorizontal: 20,

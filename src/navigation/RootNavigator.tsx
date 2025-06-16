@@ -9,6 +9,7 @@ import TabsNavigator from './TabsNavigator';
 import TransicionScreen from '../screens/TransicionScreen';
 import DetalleTrabajadorScreen from '../screens/DetalleTrabajadorScreen';
 import TimeEntryScreen from '../screens/TymeEntryScreen';
+import CrearTrabajadorScreen from '../screens/CrearTrabajadorScreen';
 import { useAuth } from '../contexts/AuthContext';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -40,6 +41,10 @@ export default function RootNavigator() {
           <Stack.Screen
             name="TimeEntry"
             component={TimeEntryScreen}
+          />
+          <Stack.Screen
+            name="CrearTrabajador"
+            component={CrearTrabajadorScreen}
           />
         </>
       ) : (

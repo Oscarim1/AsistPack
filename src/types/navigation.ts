@@ -5,6 +5,7 @@ export type RootStackParamList = {
   DetalleTrabajador: { trabajador: any };
   TimeEntry: { trabajador: any };
   MisRegistros: { trabajador: any };  // Recibe el objeto trabajador
+  CrearTrabajador: undefined;
 };
 
 // Tabs navigator parameters
@@ -21,4 +22,5 @@ export type HomeStackParamList = {
   DetalleTrabajador: { trabajador: any };
   TimeEntry: { trabajador: any };
   MisRegistros: { trabajador: any };    // También aquí recibe params
+  CrearTrabajador: undefined;
 };
