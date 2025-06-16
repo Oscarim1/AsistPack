@@ -6,6 +6,9 @@ export type RootStackParamList = {
   TimeEntry: { trabajador: any };
   MisRegistros: { trabajador: any };  // Recibe el objeto trabajador
   CrearTrabajador: undefined;
+  AsignarPulsera: {
+    trabajadorData: Omit<import('../services/trabajadorService').CrearTrabajadorData, 'pulsera_uuid'>;
+  };
 };
 
 // Tabs navigator parameters
@@ -23,4 +26,7 @@ export type HomeStackParamList = {
   TimeEntry: { trabajador: any };
   MisRegistros: { trabajador: any };    // También aquí recibe params
   CrearTrabajador: undefined;
+  AsignarPulsera: {
+    trabajadorData: Omit<import('../services/trabajadorService').CrearTrabajadorData, 'pulsera_uuid'>;
+  };
 };

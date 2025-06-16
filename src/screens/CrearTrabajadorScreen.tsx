@@ -12,7 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { HomeStackParamList } from '../types/navigation';
-import { crearTrabajador } from '../services/trabajadorService';
+import type { CrearTrabajadorData } from '../services/trabajadorService';
 import styles from '../styles/crearTrabajadorStyles';
 
 type NavProp = NativeStackNavigationProp<HomeStackParamList, 'CrearTrabajador'>;
@@ -23,26 +23,16 @@ export default function CrearTrabajadorScreen() {
   const [direccion, setDireccion] = useState('');
   const [contacto, setContacto] = useState('');
   const [rol, setRol] = useState('');
-  const [pulseraUuid, setPulseraUuid] = useState('');
+  const isValid = nombres.trim() && direccion.trim() && contacto.trim() && rol.trim();
 
-  const isValid =
-    nombres.trim() && direccion.trim() && contacto.trim() && rol.trim() && pulseraUuid.trim();
-
-  const handleSubmit = async () => {
-    try {
-      await crearTrabajador({
-        nombres,
-        direccion,
-        contacto,
-        rol,
-        pulsera_uuid: pulseraUuid,
-      });
-      Alert.alert('Éxito', 'Trabajador creado correctamente', [
-        { text: 'OK', onPress: () => navigation.navigate('Inicio') },
-      ]);
-    } catch (err: any) {
-      Alert.alert('Error', err.message || 'No se pudo crear el trabajador');
-    }
+  const handleSubmit = () => {
+    const data: Omit<CrearTrabajadorData, 'pulsera_uuid'> = {
+      nombres,
+      direccion,
+      contacto,
+      rol,
+    };
+    navigation.navigate('AsignarPulsera', { trabajadorData: data });
   };
 
   return (
@@ -97,15 +87,7 @@ export default function CrearTrabajadorScreen() {
           />
         </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Pulsera UUID"
-            value={pulseraUuid}
-            onChangeText={setPulseraUuid}
-            placeholderTextColor="#999"
-          />
-        </View>
+
 
         <TouchableOpacity
           style={[styles.button, !isValid && styles.buttonDisabled]}
