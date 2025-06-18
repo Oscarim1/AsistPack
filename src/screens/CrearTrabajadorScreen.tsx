@@ -1,23 +1,23 @@
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { HomeStackParamList } from '../types/navigation';
-import { crearTrabajador } from '../services/trabajadorService';
 import {
-  consultarEstado,
   actualizarEstado,
+  consultarEstado,
 } from '../services/pulseraService';
+import { crearTrabajador } from '../services/trabajadorService';
 import styles from '../styles/crearTrabajadorStyles';
+import type { HomeStackParamList } from '../types/navigation';
 
 type NavProp = NativeStackNavigationProp<HomeStackParamList, 'CrearTrabajador'>;
 
@@ -31,12 +31,12 @@ export default function CrearTrabajadorScreen() {
 
   const handleScanPulsera = async () => {
     try {
-      const uuid = 'PULS002';
+      const uuid = 'PULS016';
       await consultarEstado(uuid);
       Alert.alert('Pulsera activa', 'Utilice otra pulsera');
     } catch (err: any) {
       if (err.response && err.response.status === 403) {
-        setPulseraUuid('PULS002');
+        setPulseraUuid('PULS016');
         Alert.alert('Pulsera lista', 'Pulsera asignada al usuario');
       } else {
         Alert.alert('Error', 'No se pudo verificar la pulsera');
@@ -49,6 +49,13 @@ export default function CrearTrabajadorScreen() {
 
   const handleSubmit = async () => {
     try {
+      console.log('Datos a enviar:', {
+        nombres,
+        direccion,
+        contacto,
+        rol,
+        pulseraUuid,
+      });
       await crearTrabajador({
         nombres,
         direccion,
