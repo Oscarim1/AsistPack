@@ -1,4 +1,5 @@
 import { httpClient } from './httpClient';
+import type { AuthRequestConfig } from './api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface LoginResponse {
@@ -31,7 +32,8 @@ export const refreshAccessToken = async (): Promise<string> => {
   if (!stored) throw new Error('No hay refreshToken disponible');
   const { data } = await httpClient.post<RefreshResponse>(
     '/auth/refresh',
-    { refreshToken: stored }
+    { refreshToken: stored },
+    { skipAuth: true } as AuthRequestConfig
   );
   await AsyncStorage.setItem('accessToken', data.accessToken);
   return data.accessToken;
