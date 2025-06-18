@@ -13,6 +13,10 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { HomeStackParamList } from '../types/navigation';
 import { crearTrabajador } from '../services/trabajadorService';
+import {
+  verificarPulsera,
+  actualizarEstadoPulsera,
+} from '../services/pulseraService';
 import styles from '../styles/crearTrabajadorStyles';
 
 type NavProp = NativeStackNavigationProp<HomeStackParamList, 'CrearTrabajador'>;
@@ -24,6 +28,21 @@ export default function CrearTrabajadorScreen() {
   const [contacto, setContacto] = useState('');
   const [rol, setRol] = useState('');
   const [pulseraUuid, setPulseraUuid] = useState('');
+
+  const handleScan = async () => {
+    try {
+      const uuid = 'PULS002';
+      const estado = await verificarPulsera(uuid);
+      if (estado && estado.estado === 'activa') {
+        Alert.alert('Pulsera en uso', 'La pulsera está activa, usa otra.');
+        return;
+      }
+      setPulseraUuid(uuid);
+      Alert.alert('Pulsera lista', 'Pulsera asignada correctamente');
+    } catch (err: any) {
+      Alert.alert('Error', err.message || 'No se pudo verificar la pulsera');
+    }
+  };
 
   const isValid =
     nombres.trim() && direccion.trim() && contacto.trim() && rol.trim() && pulseraUuid.trim();
@@ -37,6 +56,7 @@ export default function CrearTrabajadorScreen() {
         rol,
         pulsera_uuid: pulseraUuid,
       });
+      await actualizarEstadoPulsera(pulseraUuid, 'activa');
       Alert.alert('Éxito', 'Trabajador creado correctamente', [
         { text: 'OK', onPress: () => navigation.navigate('Inicio') },
       ]);
@@ -97,15 +117,12 @@ export default function CrearTrabajadorScreen() {
           />
         </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Pulsera UUID"
-            value={pulseraUuid}
-            onChangeText={setPulseraUuid}
-            placeholderTextColor="#999"
-          />
-        </View>
+        <TouchableOpacity style={styles.button} onPress={handleScan}>
+          <Text style={styles.buttonText}>Escanear Pulsera</Text>
+        </TouchableOpacity>
+        {pulseraUuid ? (
+          <Text style={styles.scanInfo}>Pulsera: {pulseraUuid}</Text>
+        ) : null}
 
         <TouchableOpacity
           style={[styles.button, !isValid && styles.buttonDisabled]}

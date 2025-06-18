@@ -46,4 +46,9 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  scanInfo: {
+    marginTop: 8,
+    fontSize: 16,
+    color: '#333',
+  },
 });
