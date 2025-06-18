@@ -13,6 +13,10 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { HomeStackParamList } from '../types/navigation';
 import { crearTrabajador } from '../services/trabajadorService';
+import {
+  consultarEstado,
+  actualizarEstado,
+} from '../services/pulseraService';
 import styles from '../styles/crearTrabajadorStyles';
 
 type NavProp = NativeStackNavigationProp<HomeStackParamList, 'CrearTrabajador'>;
@@ -24,6 +28,21 @@ export default function CrearTrabajadorScreen() {
   const [contacto, setContacto] = useState('');
   const [rol, setRol] = useState('');
   const [pulseraUuid, setPulseraUuid] = useState('');
+
+  const handleScanPulsera = async () => {
+    try {
+      const uuid = 'PULS002';
+      await consultarEstado(uuid);
+      Alert.alert('Pulsera activa', 'Utilice otra pulsera');
+    } catch (err: any) {
+      if (err.response && err.response.status === 403) {
+        setPulseraUuid('PULS002');
+        Alert.alert('Pulsera lista', 'Pulsera asignada al usuario');
+      } else {
+        Alert.alert('Error', 'No se pudo verificar la pulsera');
+      }
+    }
+  };
 
   const isValid =
     nombres.trim() && direccion.trim() && contacto.trim() && rol.trim() && pulseraUuid.trim();
@@ -37,6 +56,7 @@ export default function CrearTrabajadorScreen() {
         rol,
         pulsera_uuid: pulseraUuid,
       });
+      await actualizarEstado(pulseraUuid, 'activa');
       Alert.alert('Éxito', 'Trabajador creado correctamente', [
         { text: 'OK', onPress: () => navigation.navigate('Inicio') },
       ]);
@@ -102,10 +122,16 @@ export default function CrearTrabajadorScreen() {
             style={styles.input}
             placeholder="Pulsera UUID"
             value={pulseraUuid}
-            onChangeText={setPulseraUuid}
+            editable={false}
             placeholderTextColor="#999"
           />
         </View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleScanPulsera}
+        >
+          <Text style={styles.buttonText}>Escanear Pulsera</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.button, !isValid && styles.buttonDisabled]}
