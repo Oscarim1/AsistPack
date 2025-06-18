@@ -28,15 +28,22 @@ httpClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor: refresh token on 403
+// Response interceptor: refresh token on expired token errors
 httpClient.interceptors.response.use(
   (res) => res,
-  async (error: AxiosError & { config?: AxiosRequestConfig & { _retry?: boolean } }) => {
+  async (
+    error: AxiosError & { config?: AxiosRequestConfig & { _retry?: boolean } }
+  ) => {
     const originalReq = error.config!;
     const status = error.response?.status;
     const msg = (error.response?.data as any)?.message;
 
-    if (status === 403 && msg === 'Token inválido o expirado' && !originalReq._retry) {
+    const tokenError =
+      (status === 401 || status === 403) &&
+      typeof msg === 'string' &&
+      /token.*(expirado|expired|inv\u00e1lido)/i.test(msg);
+
+    if (tokenError && !originalReq._retry) {
       originalReq._retry = true;
       if (isRefreshing) {
         return new Promise<string>((resolve, reject) => {
