@@ -17,7 +17,7 @@ import {
 } from '../services/pulseraService';
 import { crearTrabajador } from '../services/trabajadorService';
 import styles from '../styles/crearTrabajadorStyles';
-import FeedbackModal from '../../components/FeedbackModal';
+import FeedbackModal from '../components/FeedbackModal';
 import type { HomeStackParamList } from '../types/navigation';
 
 type NavProp = NativeStackNavigationProp<HomeStackParamList, 'CrearTrabajador'>;
