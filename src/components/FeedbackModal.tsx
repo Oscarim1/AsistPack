@@ -1,40 +1,48 @@
-import React from 'react';
-import { Modal, View, Text, StyleSheet } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Modal, Text, View } from 'react-native';
+import modalStyles from '../styles/modalStyles';
 
-interface FeedbackModalProps {
+export type FeedbackModalProps = {
   visible: boolean;
   message: string;
+  /** Texto mostrado como título del modal */
+  title?: string;
+  /** Icono de Feather a mostrar en el encabezado */
+  iconName?: React.ComponentProps<typeof Feather>['name'];
+};
+
+export default function FeedbackModal({
+  visible,
+  message,
+  title = '¡Atención!',
+  iconName = 'alert-triangle',
+}: FeedbackModalProps) {
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.spring(scaleAnim, { toValue: 1, friction: 6, useNativeDriver: true }).start();
+    } else {
+      scaleAnim.setValue(0);
+    }
+  }, [visible, scaleAnim]);
+
+  return (
+    <Modal visible={visible} transparent animationType="fade">
+      <View style={modalStyles.overlay}>
+        <Animated.View style={[modalStyles.content, { transform: [{ scale: scaleAnim }] }]}>
+          <Feather
+            name={iconName}
+            size={80}
+            color="#FFA500"
+            style={modalStyles.icon}
+          />
+          <Text style={modalStyles.title}>{title}</Text>
+          <Text style={modalStyles.message}>{message}</Text>
+        </Animated.View>
+      </View>
+    </Modal>
+  );
 }
 
-const FeedbackModal: React.FC<FeedbackModalProps> = ({ visible, message }) => (
-  <Modal transparent animationType="fade" visible={visible}>
-    <View style={styles.overlay}>
-      <View style={styles.modal}>
-        <Text style={styles.text}>{message}</Text>
-      </View>
-    </View>
-  </Modal>
-);
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modal: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 24,
-    minWidth: 200,
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 16,
-    color: '#333',
-    textAlign: 'center',
-  },
-});
-
-export default FeedbackModal;
