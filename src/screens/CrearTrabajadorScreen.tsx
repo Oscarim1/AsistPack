@@ -1,8 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  Alert,
+  Animated,
+  Modal,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -11,12 +12,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import {
   actualizarEstado,
   consultarEstado,
 } from '../services/pulseraService';
 import { crearTrabajador } from '../services/trabajadorService';
 import styles from '../styles/crearTrabajadorStyles';
+import modalStyles from '../styles/tymeEntryModalStyles';
 import type { HomeStackParamList } from '../types/navigation';
 
 type NavProp = NativeStackNavigationProp<HomeStackParamList, 'CrearTrabajador'>;
@@ -29,17 +32,36 @@ export default function CrearTrabajadorScreen() {
   const [rol, setRol] = useState('');
   const [pulseraUuid, setPulseraUuid] = useState('');
 
+  // Estado para modal de feedback
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (showModal) {
+      Animated.spring(scaleAnim, { toValue: 1, friction: 6, useNativeDriver: true }).start();
+    } else {
+      scaleAnim.setValue(0);
+    }
+  }, [showModal, scaleAnim]);
+
   const handleScanPulsera = async () => {
     try {
       const uuid = 'PULS016';
       await consultarEstado(uuid);
-      Alert.alert('Pulsera activa', 'Utilice otra pulsera');
+      setModalMessage('Pulsera activa\nUtilice otra pulsera');
+      setShowModal(true);
+      setTimeout(() => setShowModal(false), 2500);
     } catch (err: any) {
       if (err.response && err.response.status === 403) {
         setPulseraUuid('PULS016');
-        Alert.alert('Pulsera lista', 'Pulsera asignada al usuario');
+        setModalMessage('Pulsera lista\nPulsera asignada al usuario');
+        setShowModal(true);
+        setTimeout(() => setShowModal(false), 2500);
       } else {
-        Alert.alert('Error', 'No se pudo verificar la pulsera');
+        setModalMessage('Error\nNo se pudo verificar la pulsera');
+        setShowModal(true);
+        setTimeout(() => setShowModal(false), 2500);
       }
     }
   };
@@ -64,11 +86,16 @@ export default function CrearTrabajadorScreen() {
         pulsera_uuid: pulseraUuid,
       });
       await actualizarEstado(pulseraUuid, 'activa');
-      Alert.alert('Éxito', 'Trabajador creado correctamente', [
-        { text: 'OK', onPress: () => navigation.navigate('Inicio') },
-      ]);
+      setModalMessage('Trabajador creado correctamente');
+      setShowModal(true);
+      setTimeout(() => {
+        setShowModal(false);
+        navigation.navigate('Inicio');
+      }, 2500);
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'No se pudo crear el trabajador');
+      setModalMessage(err.message || 'No se pudo crear el trabajador');
+      setShowModal(true);
+      setTimeout(() => setShowModal(false), 2500);
     }
   };
 
@@ -148,6 +175,15 @@ export default function CrearTrabajadorScreen() {
           <Text style={styles.buttonText}>Crear Trabajador</Text>
         </TouchableOpacity>
       </ScrollView>
+      <Modal visible={showModal} transparent animationType="fade">
+        <View style={modalStyles.overlay}>
+          <Animated.View style={[modalStyles.content, { transform: [{ scale: scaleAnim }] }]}>
+            <Feather name="alert-triangle" size={80} color="#FFA500" />
+            <Text style={modalStyles.title}>¡Atención!</Text>
+            <Text style={modalStyles.message}>{modalMessage}</Text>
+          </Animated.View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
