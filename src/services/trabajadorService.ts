@@ -34,6 +34,13 @@ export interface CrearTrabajadorData {
 export const crearTrabajador = async (
   data: CrearTrabajadorData
 ): Promise<Trabajador> => {
-  const resp = await api.post<Trabajador>('/trabajadores', data);
-  return resp.data;
+  try {
+    console.log('Creando trabajador con datos:', data);
+    const resp = await api.post<Trabajador>('/trabajadores', data);
+    console.log('Trabajador creado:', resp.data);
+    return resp.data;
+  }
+  catch (err: any) {
+    throw new Error(err.response?.data?.message || 'Error al crear el trabajador');
+  }
 };

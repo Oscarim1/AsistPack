@@ -1,19 +1,23 @@
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { HomeStackParamList } from '../types/navigation';
+import {
+  actualizarEstado,
+  consultarEstado,
+} from '../services/pulseraService';
 import { crearTrabajador } from '../services/trabajadorService';
 import styles from '../styles/crearTrabajadorStyles';
+import type { HomeStackParamList } from '../types/navigation';
 
 type NavProp = NativeStackNavigationProp<HomeStackParamList, 'CrearTrabajador'>;
 
@@ -25,11 +29,33 @@ export default function CrearTrabajadorScreen() {
   const [rol, setRol] = useState('');
   const [pulseraUuid, setPulseraUuid] = useState('');
 
+  const handleScanPulsera = async () => {
+    try {
+      const uuid = 'PULS016';
+      await consultarEstado(uuid);
+      Alert.alert('Pulsera activa', 'Utilice otra pulsera');
+    } catch (err: any) {
+      if (err.response && err.response.status === 403) {
+        setPulseraUuid('PULS016');
+        Alert.alert('Pulsera lista', 'Pulsera asignada al usuario');
+      } else {
+        Alert.alert('Error', 'No se pudo verificar la pulsera');
+      }
+    }
+  };
+
   const isValid =
     nombres.trim() && direccion.trim() && contacto.trim() && rol.trim() && pulseraUuid.trim();
 
   const handleSubmit = async () => {
     try {
+      console.log('Datos a enviar:', {
+        nombres,
+        direccion,
+        contacto,
+        rol,
+        pulseraUuid,
+      });
       await crearTrabajador({
         nombres,
         direccion,
@@ -37,6 +63,7 @@ export default function CrearTrabajadorScreen() {
         rol,
         pulsera_uuid: pulseraUuid,
       });
+      await actualizarEstado(pulseraUuid, 'activa');
       Alert.alert('Éxito', 'Trabajador creado correctamente', [
         { text: 'OK', onPress: () => navigation.navigate('Inicio') },
       ]);
@@ -102,10 +129,16 @@ export default function CrearTrabajadorScreen() {
             style={styles.input}
             placeholder="Pulsera UUID"
             value={pulseraUuid}
-            onChangeText={setPulseraUuid}
+            editable={false}
             placeholderTextColor="#999"
           />
         </View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleScanPulsera}
+        >
+          <Text style={styles.buttonText}>Escanear Pulsera</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.button, !isValid && styles.buttonDisabled]}
