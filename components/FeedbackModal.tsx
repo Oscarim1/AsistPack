@@ -1,7 +1,7 @@
+import { Feather } from '@expo/vector-icons';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Modal, Text, View } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import modalStyles from '@/styles/modalStyles';
+import modalStyles from '../src/styles/modalStyles';
 
 type FeedbackModalProps = {
   visible: boolean;
