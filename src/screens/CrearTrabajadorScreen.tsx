@@ -33,21 +33,29 @@ export default function CrearTrabajadorScreen() {
   // Estado para modal de feedback
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalIcon, setModalIcon] = useState<React.ComponentProps<typeof Feather>['name']>('alert-triangle');
 
   const handleScanPulsera = async () => {
     try {
       const uuid = 'PULS016';
       await consultarEstado(uuid);
+      setModalTitle('Pulsera activa');
+      setModalIcon('alert-circle');
       setModalMessage('Pulsera activa\nUtilice otra pulsera');
       setShowModal(true);
       setTimeout(() => setShowModal(false), 2500);
     } catch (err: any) {
       if (err.response && err.response.status === 403) {
         setPulseraUuid('PULS016');
+        setModalTitle('Pulsera lista');
+        setModalIcon('check-circle');
         setModalMessage('Pulsera lista\nPulsera asignada al usuario');
         setShowModal(true);
         setTimeout(() => setShowModal(false), 2500);
       } else {
+        setModalTitle('Error');
+        setModalIcon('alert-triangle');
         setModalMessage('Error\nNo se pudo verificar la pulsera');
         setShowModal(true);
         setTimeout(() => setShowModal(false), 2500);
@@ -75,6 +83,8 @@ export default function CrearTrabajadorScreen() {
         pulsera_uuid: pulseraUuid,
       });
       await actualizarEstado(pulseraUuid, 'activa');
+      setModalTitle('Éxito');
+      setModalIcon('check-circle');
       setModalMessage('Trabajador creado correctamente');
       setShowModal(true);
       setTimeout(() => {
@@ -82,6 +92,8 @@ export default function CrearTrabajadorScreen() {
         navigation.navigate('NfcScanner');
       }, 2500);
     } catch (err: any) {
+      setModalTitle('Error');
+      setModalIcon('alert-triangle');
       setModalMessage(err.message || 'No se pudo crear el trabajador');
       setShowModal(true);
       setTimeout(() => setShowModal(false), 2500);
@@ -164,7 +176,12 @@ export default function CrearTrabajadorScreen() {
           <Text style={styles.buttonText}>Crear Trabajador</Text>
         </TouchableOpacity>
       </ScrollView>
-      <FeedbackModal visible={showModal} message={modalMessage} />
+      <FeedbackModal
+        visible={showModal}
+        message={modalMessage}
+        title={modalTitle}
+        iconName={modalIcon}
+      />
     </KeyboardAvoidingView>
   );
 }

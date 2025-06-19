@@ -80,6 +80,8 @@ export default function TimeEntryScreen() {
   // Modal de feedback
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalIcon, setModalIcon] = useState<React.ComponentProps<typeof Feather>['name']>('alert-triangle');
 
   // Carga estado de asistencias y ajusta botones
   const loadCurrent = useCallback(async (skipCompleteCheck = false) => {
@@ -96,6 +98,8 @@ export default function TimeEntryScreen() {
 
       // Si ya registró todo y no se omite la verificación, mostramos mensaje y redirigimos
       if (!skipCompleteCheck && Object.values(next).every(v => !v)) {
+        setModalTitle('Asistencia completa');
+        setModalIcon('check-circle');
         setModalMessage('Ya tienes registrada tu asistencia del día de hoy.\n¡Hasta mañana!');
         setShowModal(true);
         setTimeout(() => {
@@ -121,6 +125,8 @@ export default function TimeEntryScreen() {
       let msg = `Se marcó ${formatTipo(tipo)}\na las ${hora}`;
       if (tipo === 'salida') msg += '\n¡Has finalizado el día! Hasta mañana!';
 
+      setModalTitle('Registro exitoso');
+      setModalIcon('check-circle');
       setModalMessage(msg);
       setShowModal(true);
       await loadCurrent(true);
@@ -151,7 +157,12 @@ export default function TimeEntryScreen() {
           <Text style={styles.buttonText}>{formatTipo(tipo)}</Text>
         </TouchableOpacity>
       ))}
-      <FeedbackModal visible={showModal} message={modalMessage} />
+      <FeedbackModal
+        visible={showModal}
+        message={modalMessage}
+        title={modalTitle}
+        iconName={modalIcon}
+      />
     </View>
   );
 }
