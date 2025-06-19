@@ -1,10 +1,11 @@
+import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
-  Modal,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   ScrollView,
   Text,
@@ -12,7 +13,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Feather } from '@expo/vector-icons';
 import {
   actualizarEstado,
   consultarEstado,
@@ -90,7 +90,7 @@ export default function CrearTrabajadorScreen() {
       setShowModal(true);
       setTimeout(() => {
         setShowModal(false);
-        navigation.navigate('Inicio');
+        navigation.navigate('NfcScanner');
       }, 2500);
     } catch (err: any) {
       setModalMessage(err.message || 'No se pudo crear el trabajador');
