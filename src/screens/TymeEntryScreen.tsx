@@ -20,7 +20,7 @@ import {
   TipoAsistencia,
 } from '../services/tymeEntryService';
 import styles from '../styles/tymeEntryStyles';
-import FeedbackModal from '@/components/FeedbackModal';
+import FeedbackModal from '../../components/FeedbackModal';
 import type { HomeStackParamList } from '../types/navigation';
 
 // Tipos de navegación
