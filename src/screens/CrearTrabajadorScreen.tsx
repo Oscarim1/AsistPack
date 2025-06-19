@@ -1,11 +1,9 @@
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  Animated,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   ScrollView,
   Text,
@@ -19,7 +17,7 @@ import {
 } from '../services/pulseraService';
 import { crearTrabajador } from '../services/trabajadorService';
 import styles from '../styles/crearTrabajadorStyles';
-import modalStyles from '../styles/tymeEntryModalStyles';
+import FeedbackModal from '@/components/FeedbackModal';
 import type { HomeStackParamList } from '../types/navigation';
 
 type NavProp = NativeStackNavigationProp<HomeStackParamList, 'CrearTrabajador'>;
@@ -35,15 +33,6 @@ export default function CrearTrabajadorScreen() {
   // Estado para modal de feedback
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (showModal) {
-      Animated.spring(scaleAnim, { toValue: 1, friction: 6, useNativeDriver: true }).start();
-    } else {
-      scaleAnim.setValue(0);
-    }
-  }, [showModal, scaleAnim]);
 
   const handleScanPulsera = async () => {
     try {
@@ -175,15 +164,7 @@ export default function CrearTrabajadorScreen() {
           <Text style={styles.buttonText}>Crear Trabajador</Text>
         </TouchableOpacity>
       </ScrollView>
-      <Modal visible={showModal} transparent animationType="fade">
-        <View style={modalStyles.overlay}>
-          <Animated.View style={[modalStyles.content, { transform: [{ scale: scaleAnim }] }]}>
-            <Feather name="alert-triangle" size={80} color="#FFA500" />
-            <Text style={modalStyles.title}>¡Atención!</Text>
-            <Text style={modalStyles.message}>{modalMessage}</Text>
-          </Animated.View>
-        </View>
-      </Modal>
+      <FeedbackModal visible={showModal} message={modalMessage} />
     </KeyboardAvoidingView>
   );
 }
