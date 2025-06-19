@@ -1,4 +1,4 @@
-// src/styles/timeEntryModalStyles.ts
+// src/styles/modalStyles.ts
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({

@@ -5,11 +5,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { RouteProp } from '@react-navigation/native';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Animated,
-  Modal,
   Text,
   TouchableOpacity,
   View,
@@ -21,8 +19,8 @@ import {
   postAsistencia,
   TipoAsistencia,
 } from '../services/tymeEntryService';
-import modalStyles from '../styles/tymeEntryModalStyles';
 import styles from '../styles/tymeEntryStyles';
+import FeedbackModal from '../../components/FeedbackModal';
 import type { HomeStackParamList } from '../types/navigation';
 
 // Tipos de navegación
@@ -82,16 +80,6 @@ export default function TimeEntryScreen() {
   // Modal de feedback
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-
-  // Animación del modal
-  useEffect(() => {
-    if (showModal) {
-      Animated.spring(scaleAnim, { toValue: 1, friction: 6, useNativeDriver: true }).start();
-    } else {
-      scaleAnim.setValue(0);
-    }
-  }, [showModal]);
 
   // Carga estado de asistencias y ajusta botones
   const loadCurrent = useCallback(async (skipCompleteCheck = false) => {
@@ -163,15 +151,7 @@ export default function TimeEntryScreen() {
           <Text style={styles.buttonText}>{formatTipo(tipo)}</Text>
         </TouchableOpacity>
       ))}
-      <Modal visible={showModal} transparent animationType="fade">
-        <View style={modalStyles.overlay}>
-          <Animated.View style={[modalStyles.content, { transform: [{ scale: scaleAnim }] }]}> 
-            <Feather name="alert-triangle" size={80} color="#FFA500" />
-            <Text style={modalStyles.title}>¡Atención!</Text>
-            <Text style={modalStyles.message}>{modalMessage}</Text>
-          </Animated.View>
-        </View>
-      </Modal>
+      <FeedbackModal visible={showModal} message={modalMessage} />
     </View>
   );
 }
