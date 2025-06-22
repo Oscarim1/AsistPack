@@ -1,5 +1,3 @@
-// src/screens/TimeEntryScreen.tsx
-
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { RouteProp } from '@react-navigation/native';
@@ -13,6 +11,7 @@ import {
   View,
 } from 'react-native';
 
+import FeedbackModal from '../components/FeedbackModal';
 import {
   AsistenciaRecord,
   getAsistenciaActual,
@@ -20,7 +19,6 @@ import {
   TipoAsistencia,
 } from '../services/tymeEntryService';
 import styles from '../styles/tymeEntryStyles';
-import FeedbackModal from '../components/FeedbackModal';
 import type { HomeStackParamList } from '../types/navigation';
 
 // Tipos de navegación
@@ -105,7 +103,7 @@ export default function TimeEntryScreen() {
         setTimeout(() => {
           setShowModal(false);
           navigation.popToTop();
-        }, 2500);
+        }, 5000);
       }
     } catch (err: any) {
       console.warn('Error cargando asistencia actual:', err);
@@ -133,7 +131,7 @@ export default function TimeEntryScreen() {
       setTimeout(() => {
         setShowModal(false);
         navigation.popToTop();
-      }, 2500);
+      }, 5000);
     } catch (err: any) {
       console.warn('Error marcando asistencia:', err);
       setLoading(false);

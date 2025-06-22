@@ -1,4 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native';
+import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { ScanProvider } from './src/contexts/ScanContext';
@@ -10,6 +11,7 @@ export default function App() {
     <AuthProvider>
       <ScanProvider>
         <NavigationContainer ref={navigationRef}>
+        <StatusBar style="dark" />
           <RootNavigator />
         </NavigationContainer>
       </ScanProvider>
